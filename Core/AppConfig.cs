@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 namespace DaemonKit.Core {
     public class AppConfig {
         public string MainProcess = @"C:\Windows\System32\notepad.exe";
+        public string Arguments = string.Empty;
         public bool KeepTop = true;
+        public bool RunAs = true;
+        public bool AutoStart = true;
         public float DelayTime = 15.0f;
         public float IntervalTime = 30.0f;
     }

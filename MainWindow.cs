@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using DaemonKit.Core;
 using DNHper;
-using Newtonsoft.Json;
 
 namespace DaemonKit {
     public partial class DaemonKit : Form {
@@ -25,6 +16,8 @@ namespace DaemonKit {
             textbox_intervalTime.Text = AppMain.appConfig.IntervalTime.ToString ("0.0");
             textbox_delayTime.Text = AppMain.appConfig.DelayTime.ToString ("0.0");
             checkbox_KeepTop.Checked = AppMain.appConfig.KeepTop;
+            checkbox_autoStart.Checked = AppMain.appConfig.AutoStart;
+            checkbox_RunAs.Checked = AppMain.appConfig.RunAs;
         }
 
         OpenFileDialog openFileDialog = new OpenFileDialog ();
@@ -42,15 +35,19 @@ namespace DaemonKit {
             };
 
             checkbox_KeepTop.CheckedChanged += (o, args) => {
-                Console.WriteLine (checkbox_KeepTop.Checked);
                 AppMain.appConfig.KeepTop = checkbox_KeepTop.Checked;
-                syncConfig2UI ();
+            };
+            checkbox_autoStart.CheckedChanged += (o, args) => {
+                AppMain.appConfig.AutoStart = checkbox_autoStart.Checked;
+            };
+
+            checkbox_RunAs.CheckedChanged += (o, args) => {
+                AppMain.appConfig.RunAs = checkbox_RunAs.Checked;
             };
         }
 
         private void OnSelectMainProcess (object sender, EventArgs e) {
             openFileDialog.ShowDialog ();
-            Console.WriteLine ("clicked.");
         }
 
         private void OnApply (object sender, EventArgs e) {
