@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
 [assembly: AssemblyTitle("DaemonKit")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("如有疑问，可联系 @mrma617@gmail.com")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("parful_tech")]
+[assembly: AssemblyCompany("@parful_tech company")]
 [assembly: AssemblyProduct("DaemonKit")]
 [assembly: AssemblyCopyright("Copyright ©  2021 @mrbaoquan mrma617@gmail.com")]
 [assembly: AssemblyTrademark("")]

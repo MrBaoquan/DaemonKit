@@ -4,7 +4,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using DaemonKit;
 using DNHper;
+using IWshRuntimeLibrary;
 using Microsoft.Win32;
 using Microsoft.Win32.TaskScheduler;
 
@@ -18,19 +20,30 @@ namespace DaemonKit.Core {
         }
         public static AppConfig appConfig;
         private static string mainProcess = string.Empty;
+        public static string MainProcess {
+            get { return mainProcess; }
+        }
         private static float delayTime = 5.0f, intervalTime = 10.0f;
         private static bool bKeepTop = true;
         private static bool bAutoStart = true;
         private static bool bRunAs = true;
         public static void syncConfig () {
+            var _executorPath = Process.GetCurrentProcess ().MainModule.FileName;
+            var _uniKey = "DaemonKit_" + _executorPath.ToMD5 ();
+
+            if (mainProcess != appConfig.MainProcess) {
+                var _desktopDir = Environment.GetFolderPath (Environment.SpecialFolder.DesktopDirectory);
+                var _execLink = Path.Combine (_desktopDir, string.Format ("DK_{0}.lnk", Path.GetFileNameWithoutExtension (mainProcess)));
+                if (System.IO.File.Exists (_execLink)) {
+                    System.IO.File.Delete (_execLink);
+                }
+            }
             mainProcess = appConfig.MainProcess;
-            delayTime = appConfig.DelayTime;
-            intervalTime = appConfig.IntervalTime;
+            delayTime = Math.Max (appConfig.DelayTime, 0.1f);
+            intervalTime = Math.Max (appConfig.IntervalTime, 0.1f);
             bKeepTop = appConfig.KeepTop;
             bAutoStart = appConfig.AutoStart;
             bRunAs = appConfig.RunAs;
-            var _executorPath = Process.GetCurrentProcess ().MainModule.FileName;
-            var _uniKey = "DaemonKit_" + _executorPath.ToMD5 ();
 
             if (bAutoStart) {
                 runKey.SetValue (_uniKey, _executorPath);
@@ -43,45 +56,80 @@ namespace DaemonKit.Core {
                     td.Triggers.Add (lt);
                     td.Settings.ExecutionTimeLimit = TimeSpan.Zero;
                     TaskService.Instance.RootFolder.RegisterTaskDefinition (_uniKey, td);
+                    NLogger.Info ("[DK]: 已设置开机启动.");
                 }
             } else {
                 runKey.DeleteValue (_uniKey, false);
                 if (TaskService.Instance.AllTasks.ToList ().Exists (_task => _task.Name == _uniKey)) {
                     TaskService.Instance.RootFolder.DeleteTask (_uniKey, false);
+                    NLogger.Info ("[DK]: 已取消开机启动.");
                 }
             }
+
+            createShortcutIfNotExists ();
+        }
+
+        private static void createShortcutIfNotExists () {
+            var _executorPath = Process.GetCurrentProcess ().MainModule.FileName;
+            var _desktopDir = Environment.GetFolderPath (Environment.SpecialFolder.DesktopDirectory);
+            var _execLink = Path.Combine (_desktopDir, string.Format ("DK_{0}.lnk", Path.GetFileNameWithoutExtension (appConfig.MainProcess)));
+
+            if (System.IO.File.Exists (_execLink)) { return; }
+            NLogger.Info ("[DK]: 已创建桌面快捷方式.");
+
+            WshShellClass wsh = new WshShellClass ();
+            IWshShortcut _shortcut = (IWshShortcut) wsh.CreateShortcut (_execLink);
+            _shortcut.IconLocation = Path.Combine (Path.GetDirectoryName (_executorPath), "icon.ico");
+            _shortcut.TargetPath = _executorPath;
+            _shortcut.Save ();
         }
 
         public static void SaveConfig () {
             USerialization.SerializeXML (appConfig, ConfigPath);
         }
 
-        public static void ProgramEntry () {
+        private static DaemonKit mainWindow = null;
+        public static void ProgramEntry (DaemonKit InWindow) {
+            mainWindow = InWindow;
             NLogger.LogFileDir = "Logs";
             NLogger.Initialize ();
-            if (!File.Exists (ConfigPath)) {
+            if (!System.IO.File.Exists (ConfigPath)) {
                 USerialization.SerializeXML (new AppConfig (), ConfigPath);
             }
             appConfig = USerialization.DeserializeXML<AppConfig> (ConfigPath);
             syncConfig ();
             Daemon ();
+
+            Observable.Timer (TimeSpan.Zero, TimeSpan.FromMilliseconds (200))
+                .ObserveOn (mainWindow)
+                .Subscribe (_ => {
+                    mainWindow.Log (
+                        NLogger.FetchMessage ().Aggregate (string.Empty, (_current, _next) => _current + _next + "\r\n")
+                    );
+                });
         }
 
         private static IDisposable _checkHandler = null;
         public static void Daemon () {
-            NLogger.Debug ("************************* Start DaemonkIT ****************************");
+            if (!System.IO.File.Exists (mainProcess)) return;
+            ClearDeamon ();
+            NLogger.Info ("[DK]: 已启动守护任务.");
+            _checkHandler = Observable
+                .Timer (TimeSpan.FromSeconds (delayTime), TimeSpan.FromSeconds (intervalTime))
+                .Subscribe (_ => {
+                    NLogger.Info ("[DK]: 执行守护任务");
+                    ProcManager.DaemonProcess (mainProcess, appConfig.Arguments, bRunAs);
+                    if (bKeepTop) {
+                        ProcManager.KeepTopWindow (mainProcess);
+                    }
+                });
+        }
+
+        public static void ClearDeamon () {
             if (_checkHandler != null) {
                 _checkHandler.Dispose ();
                 _checkHandler = null;
             }
-            _checkHandler = Observable
-                .Timer (TimeSpan.FromSeconds (delayTime), TimeSpan.FromSeconds (intervalTime))
-                .Subscribe (_ => {
-                    ProcManager.DaemonProcess (mainProcess, appConfig.Arguments, bRunAs);
-                    if (bKeepTop) {
-                        ProcManager.KeepTopWindow (Path.GetFileNameWithoutExtension (mainProcess));
-                    }
-                });
         }
     }
 }
