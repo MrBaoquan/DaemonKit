@@ -23,6 +23,11 @@ namespace DaemonKit {
                 var _args = e as ToolStripDropDownClosingEventArgs;
                 if (_args.CloseReason == ToolStripDropDownCloseReason.ItemClicked) {
                     _args.Cancel = true;
+                } else {
+                    Observable.Start (() => {
+                            AppMain.syncConfig ();
+                        }).ObserveOn (this)
+                        .Subscribe ();
                 }
             };
 
@@ -33,6 +38,7 @@ namespace DaemonKit {
                 ts_options.ShowDropDown ();
                 AppMain.appConfig.AutoStart = menu_autoStart.Checked;
                 syncConfig2UI ();
+                AppMain.SaveConfig ();
             };
 
             menu_keepTop.CheckOnClick = true;
@@ -42,6 +48,7 @@ namespace DaemonKit {
                 ts_options.ShowDropDown ();
                 AppMain.appConfig.KeepTop = menu_keepTop.Checked;
                 syncConfig2UI ();
+                AppMain.SaveConfig ();
             };
 
             menu_RunAs.CheckOnClick = true;
@@ -51,6 +58,42 @@ namespace DaemonKit {
                 ts_options.ShowDropDown ();
                 AppMain.appConfig.RunAs = menu_RunAs.Checked;
                 syncConfig2UI ();
+                AppMain.SaveConfig ();
+            };
+
+            menu_globalShortcut.CheckOnClick = true;
+            menu_globalShortcut.ShowShortcutKeys = true;
+            menu_globalShortcut.ShortcutKeys = Keys.Alt | Keys.D4;
+            menu_globalShortcut.CheckedChanged += (sendor, e) => {
+
+                ts_options.ShowDropDown ();
+                AppMain.appConfig.GlobalShortcut = menu_globalShortcut.Checked;
+                syncConfig2UI ();
+                AppMain.SaveConfig ();
+                if (menu_globalShortcut.Checked) {
+                    RegisterHotKey ();
+                } else {
+                    UnregisterHotKey ();
+                }
+            };
+
+            /// <summary>
+            /// 打开、杀死进程
+            /// </summary>
+            menu_openProcess.ShortcutKeys = Keys.Control | Keys.R;
+            menu_openProcess.ShowShortcutKeys = true;
+            menu_openProcess.Click += (sendor, e) => {
+                if (btn_confirm.Text == "开始守护") {
+                    startDaemon ();
+                }
+            };
+            menu_killProcess.ShortcutKeys = Keys.Control | Keys.W;
+            menu_killProcess.ShowShortcutKeys = true;
+            menu_killProcess.Click += (sendor, e) => {
+                AppMain.KillProcess ();
+                if (btn_confirm.Text == "暂停守护") {
+                    stopDaemon ();
+                }
             };
 
             menu_selectProcess.ShortcutKeys = Keys.Control | Keys.O;
@@ -59,13 +102,7 @@ namespace DaemonKit {
                 openFileDialog.ShowDialog ();
             };
 
-            menu_processDir.ShortcutKeys = Keys.Control | Keys.D1;
-            menu_processDir.ShowShortcutKeys = true;
-            menu_processDir.Click += (sender, e) => {
-                WinAPI.OpenProcess ("explorer.exe", Path.GetDirectoryName (AppMain.MainProcess));
-            };
-
-            menu_backup.ShortcutKeys = Keys.Control | Keys.D2;
+            menu_backup.ShortcutKeys = Keys.Control | Keys.B;
             menu_backup.ShowShortcutKeys = true;
             IDisposable _copyHandler = null;
             menu_backup.Click += (sender, e) => {
@@ -93,15 +130,45 @@ namespace DaemonKit {
                     });
             };
 
+            menu_processDir.ShortcutKeys = Keys.Control | Keys.D1;
+            menu_processDir.ShowShortcutKeys = true;
+            menu_processDir.Click += (sender, e) => {
+                WinAPI.OpenProcess ("explorer.exe", Path.GetDirectoryName (AppMain.MainProcess));
+            };
+
             menu_configDir.ShortcutKeys = Keys.Control | Keys.E;
             menu_configDir.ShowShortcutKeys = true;
             menu_configDir.Click += (sender, e) => {
                 WinAPI.OpenProcess ("notepad.exe", AppMain.ConfigPath);
             };
 
+            menu_cmd.ShortcutKeys = Keys.Control | Keys.T;
+            menu_cmd.ShowShortcutKeys = true;
+            menu_cmd.Click += (sendor, e) => {
+                WinAPI.OpenProcess ("cmd.exe", "", true);
+            };
+
+            menu_powershell.ShortcutKeys = Keys.Control | Keys.P;
+            menu_powershell.ShowShortcutKeys = true;
+            menu_powershell.Click += (sendor, e) => {
+                WinAPI.OpenProcess ("powershell.exe", "", true);
+            };
+
             menu_about.Click += (sender, e) => {
                 new About ().ShowDialog ();
             };
+        }
+
+        private void syncFormStatus () {
+            if (btn_confirm.Text != "开始守护") {
+                textbox_MainProcess.Enabled = false;
+                textbox_intervalTime.Enabled = false;
+                textbox_delayTime.Enabled = false;
+            } else {
+                textbox_MainProcess.Enabled = true;
+                textbox_intervalTime.Enabled = true;
+                textbox_delayTime.Enabled = true;
+            }
         }
 
         private void syncConfig2UI () {
@@ -112,6 +179,7 @@ namespace DaemonKit {
             menu_autoStart.Checked = AppMain.appConfig.AutoStart;
             menu_keepTop.Checked = AppMain.appConfig.KeepTop;
             menu_RunAs.Checked = AppMain.appConfig.RunAs;
+            menu_globalShortcut.Checked = AppMain.appConfig.GlobalShortcut;
         }
 
         public void Log (string InMsg) {
@@ -120,7 +188,6 @@ namespace DaemonKit {
             text_logbox.SelectionStart = InMsg.Length;
             text_logbox.ScrollToCaret ();
             text_logbox.Refresh ();
-
         }
 
         OpenFileDialog openFileDialog = new OpenFileDialog ();
@@ -131,9 +198,7 @@ namespace DaemonKit {
 
             AppMain.ProgramEntry (this);
             syncConfig2UI ();
-
-            // 注册全局热键
-            WinAPI.RegisterHotKey (this.Handle, 100, (uint) KeyModifiers.Ctrl, (uint) Keys.D);
+            syncFormStatus ();
 
             openFileDialog.InitialDirectory = Path.GetDirectoryName (AppMain.appConfig.MainProcess);
             openFileDialog.Filter = "可执行文件(*.exe)|*.exe";
@@ -141,6 +206,7 @@ namespace DaemonKit {
                 AppMain.appConfig.MainProcess = openFileDialog.FileName;
                 openFileDialog.InitialDirectory = Path.GetDirectoryName (AppMain.appConfig.MainProcess);
                 syncConfig2UI ();
+                syncFormStatus ();
             };
 
             if (!File.Exists (AppMain.MainProcess)) {
@@ -180,40 +246,65 @@ namespace DaemonKit {
             openFileDialog.ShowDialog ();
         }
 
+        private void stopDaemon () {
+            btn_confirm.Text = "开始守护";
+            AppMain.ClearDeamon ();
+            NLogger.Info ("[DK]: 暂停守护任务");
+
+            syncFormStatus ();
+        }
+
+        private void startDaemon () {
+
+            btn_confirm.Text = "执行中...";
+            btn_confirm.Enabled = false;
+
+            AppMain.SaveConfig ();
+            AppMain.syncConfig ();
+            AppMain.RunDaemonTask ();
+            btn_confirm.Text = "暂停守护";
+            btn_confirm.Enabled = true;
+
+            syncFormStatus ();
+        }
+
         private void OnApply (object sender, EventArgs e) {
             if (btn_confirm.Text == "暂停守护") {
-                btn_confirm.Text = "开始守护";
-                AppMain.ClearDeamon ();
-                NLogger.Info ("[DK]: 暂停守护任务");
+                stopDaemon ();
             } else {
-                btn_confirm.Text = "执行中...";
-                btn_confirm.Enabled = false;
-
-                AppMain.SaveConfig ();
-                AppMain.syncConfig ();
-                AppMain.Daemon ();
-                btn_confirm.Text = "暂停守护";
-                btn_confirm.Enabled = true;
+                startDaemon ();
             }
         }
 
         private void OnDelayInput (object sender, EventArgs e) {
-            AppMain.appConfig.DelayTime = textbox_delayTime.Text.Parse2Float ();
+            AppMain.appConfig.DelayTime = textbox_delayTime.Text.Parse2Float (0.1f);
         }
 
         private void OnIntervalInput (object sender, EventArgs e) {
-            AppMain.appConfig.IntervalTime = textbox_intervalTime.Text.Parse2Float ();
+            AppMain.appConfig.IntervalTime = textbox_intervalTime.Text.Parse2Float (0.1f);
         }
 
         protected override void WndProc (ref Message m) {
             const int WM_HOTKEY = 0X0312;
             switch (m.Msg) {
                 case WM_HOTKEY:
+                    if (!AppMain.appConfig.GlobalShortcut) {
+                        break;
+                    }
                     if (m.WParam.ToInt32 () == 100) {
                         WinAPI.SetWindowPos (this.Handle, (int) HWndInsertAfter.HWND_TOPMOST,
                             0, 0, 0, 0,
                             SetWindowPosFlags.SWP_SHOWWINDOW | SetWindowPosFlags.SWP_NOMOVE | SetWindowPosFlags.SWP_NOSIZE | SetWindowPosFlags.SWP_FRAMECHANGED);
                         WinAPI.ShowWindow (this.Handle, (int) CMDShow.SW_SHOWNORMAL);
+                    } else if (m.WParam.ToInt32 () == 101) {
+                        if (btn_confirm.Text == "开始守护") {
+                            startDaemon ();
+                        }
+                    } else if (m.WParam.ToInt32 () == 102) {
+                        AppMain.KillProcess ();
+                        if (btn_confirm.Text == "暂停守护") {
+                            stopDaemon ();
+                        }
                     }
                     break;
             }
@@ -222,6 +313,24 @@ namespace DaemonKit {
 
         private void DaemonKit_Unload (object sender, FormClosingEventArgs e) {
             WinAPI.UnregisterHotKey (this.Handle, 100);
+            WinAPI.UnregisterHotKey (this.Handle, 101);
+            WinAPI.UnregisterHotKey (this.Handle, 102);
+        }
+
+        public void RegisterHotKey () {
+            // 注册全局热键
+            // 置顶守护窗口
+            WinAPI.RegisterHotKey (this.Handle, 100, (uint) KeyModifiers.Ctrl, (uint) Keys.D);
+            // 运行进程
+            WinAPI.RegisterHotKey (this.Handle, 101, (uint) (KeyModifiers.Ctrl), (uint) Keys.R);
+            // 杀死进程
+            WinAPI.RegisterHotKey (this.Handle, 102, (uint) (KeyModifiers.Ctrl), (uint) Keys.W);
+        }
+
+        public void UnregisterHotKey () {
+            WinAPI.UnregisterHotKey (this.Handle, 100);
+            WinAPI.UnregisterHotKey (this.Handle, 101);
+            WinAPI.UnregisterHotKey (this.Handle, 102);
         }
     }
 }

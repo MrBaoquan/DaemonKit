@@ -12,6 +12,7 @@ namespace DaemonKit.Core {
         public bool KeepTop = true;
         public bool RunAs = true;
         public bool AutoStart = true;
+        public bool GlobalShortcut = true;
         public float DelayTime = 15.0f;
         public float IntervalTime = 30.0f;
     }

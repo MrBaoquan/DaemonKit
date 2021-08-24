@@ -69,6 +69,10 @@ namespace DaemonKit.Core {
             createShortcutIfNotExists ();
         }
 
+        private static void syncAutoStart () {
+
+        }
+
         private static void createShortcutIfNotExists () {
             var _executorPath = Process.GetCurrentProcess ().MainModule.FileName;
             var _desktopDir = Environment.GetFolderPath (Environment.SpecialFolder.DesktopDirectory);
@@ -98,7 +102,7 @@ namespace DaemonKit.Core {
             }
             appConfig = USerialization.DeserializeXML<AppConfig> (ConfigPath);
             syncConfig ();
-            Daemon ();
+            RunDaemonTask ();
 
             Observable.Timer (TimeSpan.Zero, TimeSpan.FromMilliseconds (200))
                 .ObserveOn (mainWindow)
@@ -110,7 +114,7 @@ namespace DaemonKit.Core {
         }
 
         private static IDisposable _checkHandler = null;
-        public static void Daemon () {
+        public static void RunDaemonTask () {
             if (!System.IO.File.Exists (mainProcess)) return;
             ClearDeamon ();
             NLogger.Info ("[DK]: 已启动守护任务.");
@@ -118,11 +122,23 @@ namespace DaemonKit.Core {
                 .Timer (TimeSpan.FromSeconds (delayTime), TimeSpan.FromSeconds (intervalTime))
                 .Subscribe (_ => {
                     NLogger.Info ("[DK]: 执行守护任务");
-                    ProcManager.DaemonProcess (mainProcess, appConfig.Arguments, bRunAs);
-                    if (bKeepTop) {
-                        ProcManager.KeepTopWindow (mainProcess);
-                    }
+                    OpenProcess ();
                 });
+        }
+
+        public static void OpenProcess () {
+            ProcManager.DaemonProcess (mainProcess, appConfig.Arguments, bRunAs);
+            if (bKeepTop) {
+                ProcManager.KeepTopWindow (mainProcess);
+            }
+        }
+
+        public static void KillProcess () {
+            ClearDeamon ();
+            var _process = WinAPI.FindProcess (mainProcess);
+            if (_process == default (Process)) return;
+            _process.Kill ();
+            NLogger.Info ("[DK]: 已杀死进程: {0}", mainProcess);
         }
 
         public static void ClearDeamon () {

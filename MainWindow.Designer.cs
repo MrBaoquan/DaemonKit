@@ -37,19 +37,25 @@
             this.label2 = new System.Windows.Forms.Label();
             this.textbox_intervalTime = new System.Windows.Forms.TextBox();
             this.文件ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.menu_selectProcess = new System.Windows.Forms.ToolStripMenuItem();
-            this.menu_processDir = new System.Windows.Forms.ToolStripMenuItem();
             this.menu_configDir = new System.Windows.Forms.ToolStripMenuItem();
+            this.menu_cmd = new System.Windows.Forms.ToolStripMenuItem();
+            this.menu_processDir = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenuStrip = new System.Windows.Forms.MenuStrip();
+            this.快捷键ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menu_openProcess = new System.Windows.Forms.ToolStripMenuItem();
+            this.menu_killProcess = new System.Windows.Forms.ToolStripMenuItem();
+            this.menu_selectProcess = new System.Windows.Forms.ToolStripMenuItem();
+            this.menu_backup = new System.Windows.Forms.ToolStripMenuItem();
             this.ts_options = new System.Windows.Forms.ToolStripMenuItem();
             this.menu_autoStart = new System.Windows.Forms.ToolStripMenuItem();
             this.menu_keepTop = new System.Windows.Forms.ToolStripMenuItem();
             this.menu_RunAs = new System.Windows.Forms.ToolStripMenuItem();
+            this.menu_globalShortcut = new System.Windows.Forms.ToolStripMenuItem();
             this.关于ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menu_about = new System.Windows.Forms.ToolStripMenuItem();
             this.text_information = new System.Windows.Forms.TextBox();
-            this.menu_backup = new System.Windows.Forms.ToolStripMenuItem();
             this.text_logbox = new System.Windows.Forms.TextBox();
+            this.menu_powershell = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -144,36 +150,37 @@
             this.文件ToolStripMenuItem.CheckOnClick = true;
             this.文件ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menu_configDir,
-            this.menu_selectProcess,
-            this.menu_processDir,
-            this.menu_backup});
+            this.menu_cmd,
+            this.menu_powershell,
+            this.menu_processDir});
             this.文件ToolStripMenuItem.Name = "文件ToolStripMenuItem";
             this.文件ToolStripMenuItem.Size = new System.Drawing.Size(44, 21);
-            this.文件ToolStripMenuItem.Text = "文件";
-            // 
-            // menu_selectProcess
-            // 
-            this.menu_selectProcess.Name = "menu_selectProcess";
-            this.menu_selectProcess.Size = new System.Drawing.Size(180, 22);
-            this.menu_selectProcess.Text = "选择进程";
-            // 
-            // menu_processDir
-            // 
-            this.menu_processDir.Name = "menu_processDir";
-            this.menu_processDir.Size = new System.Drawing.Size(180, 22);
-            this.menu_processDir.Text = "进程目录";
+            this.文件ToolStripMenuItem.Text = "打开";
             // 
             // menu_configDir
             // 
             this.menu_configDir.Name = "menu_configDir";
-            this.menu_configDir.Size = new System.Drawing.Size(180, 22);
+            this.menu_configDir.Size = new System.Drawing.Size(183, 22);
             this.menu_configDir.Text = "配置文件";
+            // 
+            // menu_cmd
+            // 
+            this.menu_cmd.Name = "menu_cmd";
+            this.menu_cmd.Size = new System.Drawing.Size(183, 22);
+            this.menu_cmd.Text = "命令行(CMD)";
+            // 
+            // menu_processDir
+            // 
+            this.menu_processDir.Name = "menu_processDir";
+            this.menu_processDir.Size = new System.Drawing.Size(183, 22);
+            this.menu_processDir.Text = "进程目录";
             // 
             // mainMenuStrip
             // 
             this.mainMenuStrip.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.mainMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.文件ToolStripMenuItem,
+            this.快捷键ToolStripMenuItem,
             this.ts_options,
             this.关于ToolStripMenuItem});
             this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
@@ -182,12 +189,48 @@
             this.mainMenuStrip.TabIndex = 10;
             this.mainMenuStrip.Text = "menuStrip1";
             // 
+            // 快捷键ToolStripMenuItem
+            // 
+            this.快捷键ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menu_openProcess,
+            this.menu_killProcess,
+            this.menu_selectProcess,
+            this.menu_backup});
+            this.快捷键ToolStripMenuItem.Name = "快捷键ToolStripMenuItem";
+            this.快捷键ToolStripMenuItem.Size = new System.Drawing.Size(44, 21);
+            this.快捷键ToolStripMenuItem.Text = "操作";
+            // 
+            // menu_openProcess
+            // 
+            this.menu_openProcess.Name = "menu_openProcess";
+            this.menu_openProcess.Size = new System.Drawing.Size(180, 22);
+            this.menu_openProcess.Text = "打开进程";
+            // 
+            // menu_killProcess
+            // 
+            this.menu_killProcess.Name = "menu_killProcess";
+            this.menu_killProcess.Size = new System.Drawing.Size(180, 22);
+            this.menu_killProcess.Text = "杀死进程";
+            // 
+            // menu_selectProcess
+            // 
+            this.menu_selectProcess.Name = "menu_selectProcess";
+            this.menu_selectProcess.Size = new System.Drawing.Size(180, 22);
+            this.menu_selectProcess.Text = "选择进程";
+            // 
+            // menu_backup
+            // 
+            this.menu_backup.Name = "menu_backup";
+            this.menu_backup.Size = new System.Drawing.Size(180, 22);
+            this.menu_backup.Text = "备份进程";
+            // 
             // ts_options
             // 
             this.ts_options.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menu_autoStart,
             this.menu_keepTop,
-            this.menu_RunAs});
+            this.menu_RunAs,
+            this.menu_globalShortcut});
             this.ts_options.Name = "ts_options";
             this.ts_options.Size = new System.Drawing.Size(44, 21);
             this.ts_options.Text = "选项";
@@ -202,13 +245,19 @@
             // 
             this.menu_keepTop.Name = "menu_keepTop";
             this.menu_keepTop.Size = new System.Drawing.Size(180, 22);
-            this.menu_keepTop.Text = "窗口置顶";
+            this.menu_keepTop.Text = "进程窗口置顶";
             // 
             // menu_RunAs
             // 
             this.menu_RunAs.Name = "menu_RunAs";
             this.menu_RunAs.Size = new System.Drawing.Size(180, 22);
             this.menu_RunAs.Text = "管理员身份运行";
+            // 
+            // menu_globalShortcut
+            // 
+            this.menu_globalShortcut.Name = "menu_globalShortcut";
+            this.menu_globalShortcut.Size = new System.Drawing.Size(180, 22);
+            this.menu_globalShortcut.Text = "全局快捷键";
             // 
             // 关于ToolStripMenuItem
             // 
@@ -238,12 +287,6 @@
             this.text_information.TabIndex = 5;
             this.text_information.Text = "硬件信息示例文本";
             // 
-            // menu_backup
-            // 
-            this.menu_backup.Name = "menu_backup";
-            this.menu_backup.Size = new System.Drawing.Size(180, 22);
-            this.menu_backup.Text = "备份进程";
-            // 
             // text_logbox
             // 
             this.text_logbox.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
@@ -257,6 +300,12 @@
             this.text_logbox.Size = new System.Drawing.Size(443, 143);
             this.text_logbox.TabIndex = 11;
             this.text_logbox.Text = "日志信息示例文本";
+            // 
+            // menu_powershell
+            // 
+            this.menu_powershell.Name = "menu_powershell";
+            this.menu_powershell.Size = new System.Drawing.Size(183, 22);
+            this.menu_powershell.Text = "命令行(PowerShell)";
             // 
             // DaemonKit
             // 
@@ -305,12 +354,18 @@
         private System.Windows.Forms.ToolStripMenuItem menu_autoStart;
         private System.Windows.Forms.ToolStripMenuItem menu_keepTop;
         private System.Windows.Forms.ToolStripMenuItem menu_RunAs;
-        private System.Windows.Forms.ToolStripMenuItem menu_selectProcess;
         private System.Windows.Forms.ToolStripMenuItem 关于ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem menu_about;
         private System.Windows.Forms.TextBox text_information;
-        private System.Windows.Forms.ToolStripMenuItem menu_backup;
         private System.Windows.Forms.TextBox text_logbox;
+        private System.Windows.Forms.ToolStripMenuItem 快捷键ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem menu_openProcess;
+        private System.Windows.Forms.ToolStripMenuItem menu_killProcess;
+        private System.Windows.Forms.ToolStripMenuItem menu_backup;
+        private System.Windows.Forms.ToolStripMenuItem menu_globalShortcut;
+        private System.Windows.Forms.ToolStripMenuItem menu_selectProcess;
+        private System.Windows.Forms.ToolStripMenuItem menu_cmd;
+        private System.Windows.Forms.ToolStripMenuItem menu_powershell;
     }
 }
 
