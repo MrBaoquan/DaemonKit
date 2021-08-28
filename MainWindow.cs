@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Management;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -86,6 +87,7 @@ namespace DaemonKit {
                 if (btn_confirm.Text == "开始守护") {
                     startDaemon ();
                 }
+                AppMain.OpenProcess ();
             };
             menu_killProcess.ShortcutKeys = Keys.Control | Keys.W;
             menu_killProcess.ShowShortcutKeys = true;
@@ -134,6 +136,18 @@ namespace DaemonKit {
             menu_processDir.ShowShortcutKeys = true;
             menu_processDir.Click += (sender, e) => {
                 WinAPI.OpenProcess ("explorer.exe", Path.GetDirectoryName (AppMain.MainProcess));
+            };
+
+            menu_userProfile.ShortcutKeys = Keys.Control | Keys.D2;
+            menu_userProfile.ShowShortcutKeys = true;
+            menu_userProfile.Click += (sender, e) => {
+                WinAPI.OpenProcess ("explorer.exe", Environment.GetFolderPath (Environment.SpecialFolder.UserProfile));
+            };
+
+            menu_startup.ShortcutKeys = Keys.Control | Keys.D3;
+            menu_startup.ShowShortcutKeys = true;
+            menu_startup.Click += (sender, e) => {
+                WinAPI.OpenProcess ("explorer.exe", Environment.GetFolderPath (Environment.SpecialFolder.Startup));
             };
 
             menu_configDir.ShortcutKeys = Keys.Control | Keys.E;
@@ -219,7 +233,8 @@ namespace DaemonKit {
                 btn_confirm.Text = "暂停守护";
             }
 
-            text_information.Text = "玩命加载硬件信息中...";
+            text_information.Text = "硬件信息玩命读取中...";
+
             Observable.Start<string> (() => {
                 hardwareInfo.RefreshCPUList ();
                 hardwareInfo.RefreshVideoControllerList ();
@@ -228,10 +243,13 @@ namespace DaemonKit {
                 hardwareInfo.RefreshMonitorList ();
                 hardwareInfo.RefreshBIOSList ();
                 hardwareInfo.RefreshMotherboardList ();
-                var _description = HardwareInfo.GetLocalIPv4Addresses ().Aggregate ("IP4地址:" + "\r\n", (_current, _next) => { return _current + _next + "\r\n"; });
+                var _description = HardwareInfo.GetLocalIPv4Addresses ().Aggregate ("IPv4地址:" + "\r\n", (_current, _next) => { return _current + _next + "\r\n"; });
                 _description = hardwareInfo.CpuList.Aggregate (_description + "\r\nCPU:\r\n", (_current, _next) => { return _current + _next.Name; });
                 _description = hardwareInfo.VideoControllerList.Aggregate (_description + "\r\n\r\nGPU:\r\n", (_current, _next) => { return _current + _next.Name; });
-                _description = hardwareInfo.MemoryList.Aggregate (_description + "\r\n\r\n内存:\r\n", (_current, _next) => { return _current + _next.Manufacturer + _next.PartNumber + "\r\n"; });
+                _description = hardwareInfo.MemoryList.Aggregate (_description + "\r\n\r\n内存:\r\n", (_current, _next) => {
+                    return _current +
+                        string.Format ("{0}-{1}({2})", _next.Manufacturer, _next.PartNumber, _next.Capacity.FormatBytes ()) + "\r\n";
+                });
                 _description = hardwareInfo.MonitorList.Aggregate (_description + "\r\n显示器:\r\n", (_current, _next) => { return _current + _next.Name + "\r\n"; });
                 _description = hardwareInfo.BiosList.Aggregate (_description + "\r\nBIOS:\r\n", (_current, _next) => { return _current + _next.Manufacturer + " " + _next.Version + "\r\n"; });
                 _description = hardwareInfo.MotherboardList.Aggregate (_description + "\r\n主板:\r\n", (_current, _next) => { return _current + _next.Manufacturer + " " + _next.Product + "\r\n"; });
@@ -300,6 +318,7 @@ namespace DaemonKit {
                         if (btn_confirm.Text == "开始守护") {
                             startDaemon ();
                         }
+                        AppMain.OpenProcess ();
                     } else if (m.WParam.ToInt32 () == 102) {
                         AppMain.KillProcess ();
                         if (btn_confirm.Text == "暂停守护") {

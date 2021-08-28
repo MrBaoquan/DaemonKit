@@ -36,6 +36,7 @@ namespace DaemonKit.Core {
                 var _execLink = Path.Combine (_desktopDir, string.Format ("DK_{0}.lnk", Path.GetFileNameWithoutExtension (mainProcess)));
                 if (System.IO.File.Exists (_execLink)) {
                     System.IO.File.Delete (_execLink);
+                    NLogger.Info ("[DK]: 已删除桌面快捷方式:{0}", _execLink);
                 }
             }
             mainProcess = appConfig.MainProcess;
@@ -69,17 +70,13 @@ namespace DaemonKit.Core {
             createShortcutIfNotExists ();
         }
 
-        private static void syncAutoStart () {
-
-        }
-
         private static void createShortcutIfNotExists () {
             var _executorPath = Process.GetCurrentProcess ().MainModule.FileName;
             var _desktopDir = Environment.GetFolderPath (Environment.SpecialFolder.DesktopDirectory);
             var _execLink = Path.Combine (_desktopDir, string.Format ("DK_{0}.lnk", Path.GetFileNameWithoutExtension (appConfig.MainProcess)));
 
             if (System.IO.File.Exists (_execLink)) { return; }
-            NLogger.Info ("[DK]: 已创建桌面快捷方式.");
+            NLogger.Info ("[DK]: 已创建桌面快捷方式:{0}.", _execLink);
 
             WshShellClass wsh = new WshShellClass ();
             IWshShortcut _shortcut = (IWshShortcut) wsh.CreateShortcut (_execLink);
