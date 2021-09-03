@@ -125,9 +125,22 @@ namespace DaemonKit.Core {
 
         public static void OpenProcess () {
             ProcManager.DaemonProcess (mainProcess, appConfig.Arguments, bRunAs);
+
             if (bKeepTop) {
                 ProcManager.KeepTopWindow (mainProcess);
             }
+
+            if (appConfig.KillIfHung) {
+                var _process = WinAPI.FindProcess (mainProcess);
+                if (_process == default (Process)) return;
+
+                // 如果程序挂起 则关闭进程
+                if (WinAPI.IsHungAppWindow (_process.MainWindowHandle)) {
+                    _process.Kill ();
+                    NLogger.Info ("[DK]: 检测到进程挂起, 已将其杀死: {0}", mainProcess);
+                }
+            }
+
         }
 
         public static void KillProcess () {

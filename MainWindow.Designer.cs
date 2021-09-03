@@ -41,6 +41,8 @@
             this.menu_cmd = new System.Windows.Forms.ToolStripMenuItem();
             this.menu_powershell = new System.Windows.Forms.ToolStripMenuItem();
             this.menu_processDir = new System.Windows.Forms.ToolStripMenuItem();
+            this.menu_userProfile = new System.Windows.Forms.ToolStripMenuItem();
+            this.menu_startup = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenuStrip = new System.Windows.Forms.MenuStrip();
             this.快捷键ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menu_openProcess = new System.Windows.Forms.ToolStripMenuItem();
@@ -56,8 +58,6 @@
             this.menu_about = new System.Windows.Forms.ToolStripMenuItem();
             this.text_information = new System.Windows.Forms.TextBox();
             this.text_logbox = new System.Windows.Forms.TextBox();
-            this.menu_userProfile = new System.Windows.Forms.ToolStripMenuItem();
-            this.menu_startup = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -185,6 +185,18 @@
             this.menu_processDir.Size = new System.Drawing.Size(183, 22);
             this.menu_processDir.Text = "进程目录";
             // 
+            // menu_userProfile
+            // 
+            this.menu_userProfile.Name = "menu_userProfile";
+            this.menu_userProfile.Size = new System.Drawing.Size(183, 22);
+            this.menu_userProfile.Text = "用户目录";
+            // 
+            // menu_startup
+            // 
+            this.menu_startup.Name = "menu_startup";
+            this.menu_startup.Size = new System.Drawing.Size(183, 22);
+            this.menu_startup.Text = "启动项";
+            // 
             // mainMenuStrip
             // 
             this.mainMenuStrip.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
@@ -248,25 +260,25 @@
             // menu_autoStart
             // 
             this.menu_autoStart.Name = "menu_autoStart";
-            this.menu_autoStart.Size = new System.Drawing.Size(160, 22);
+            this.menu_autoStart.Size = new System.Drawing.Size(180, 22);
             this.menu_autoStart.Text = "开机自启";
             // 
             // menu_keepTop
             // 
             this.menu_keepTop.Name = "menu_keepTop";
-            this.menu_keepTop.Size = new System.Drawing.Size(160, 22);
+            this.menu_keepTop.Size = new System.Drawing.Size(180, 22);
             this.menu_keepTop.Text = "进程窗口置顶";
             // 
             // menu_RunAs
             // 
             this.menu_RunAs.Name = "menu_RunAs";
-            this.menu_RunAs.Size = new System.Drawing.Size(160, 22);
+            this.menu_RunAs.Size = new System.Drawing.Size(180, 22);
             this.menu_RunAs.Text = "管理员身份运行";
             // 
             // menu_globalShortcut
             // 
             this.menu_globalShortcut.Name = "menu_globalShortcut";
-            this.menu_globalShortcut.Size = new System.Drawing.Size(160, 22);
+            this.menu_globalShortcut.Size = new System.Drawing.Size(180, 22);
             this.menu_globalShortcut.Text = "全局快捷键";
             // 
             // 关于ToolStripMenuItem
@@ -280,7 +292,7 @@
             // menu_about
             // 
             this.menu_about.Name = "menu_about";
-            this.menu_about.Size = new System.Drawing.Size(100, 22);
+            this.menu_about.Size = new System.Drawing.Size(180, 22);
             this.menu_about.Text = "关于";
             // 
             // text_information
@@ -296,6 +308,7 @@
             this.text_information.Size = new System.Drawing.Size(443, 222);
             this.text_information.TabIndex = 5;
             this.text_information.Text = "硬件信息示例文本";
+            this.text_information.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.FetchHardwareInfo);
             // 
             // text_logbox
             // 
@@ -310,18 +323,6 @@
             this.text_logbox.Size = new System.Drawing.Size(443, 143);
             this.text_logbox.TabIndex = 11;
             this.text_logbox.Text = "日志信息示例文本";
-            // 
-            // menu_userProfile
-            // 
-            this.menu_userProfile.Name = "menu_userProfile";
-            this.menu_userProfile.Size = new System.Drawing.Size(183, 22);
-            this.menu_userProfile.Text = "用户目录";
-            // 
-            // menu_startup
-            // 
-            this.menu_startup.Name = "menu_startup";
-            this.menu_startup.Size = new System.Drawing.Size(183, 22);
-            this.menu_startup.Text = "启动项";
             // 
             // DaemonKit
             // 

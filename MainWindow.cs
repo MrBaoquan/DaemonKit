@@ -14,10 +14,21 @@ using Hardware.Info;
 namespace DaemonKit {
     public partial class DaemonKit : Form {
         static readonly HardwareInfo hardwareInfo = new HardwareInfo ();
+        public static string ExtensionConfigPath {
+            get {
+                return Path.Combine (Path.GetDirectoryName (Process.GetCurrentProcess ().MainModule.FileName), "extension.xml");
+            }
+        }
+        public static string ExtensionPath {
+            get {
+                return Path.Combine (Path.GetDirectoryName (Process.GetCurrentProcess ().MainModule.FileName), "Extensions");
+            }
+        }
+        ExtentionConfig extensionConfig = null;
         public DaemonKit () {
 
             InitializeComponent ();
-
+            #region 菜单栏设置
             ts_options.ShowShortcutKeys = true;
             ts_options.ShortcutKeys = Keys.Alt | Keys.O;
             ts_options.DropDown.Closing += (sender, e) => {
@@ -171,6 +182,35 @@ namespace DaemonKit {
             menu_about.Click += (sender, e) => {
                 new About ().ShowDialog ();
             };
+
+            #endregion
+            #region 拓展菜单栏
+
+            if (!File.Exists (ExtensionConfigPath)) {
+                USerialization.SerializeXML (new ExtentionConfig (), ExtensionConfigPath);
+            };
+
+            try {
+                extensionConfig = USerialization.DeserializeXML<ExtentionConfig> (ExtensionConfigPath);
+                var _toolStrip = new ToolStripMenuItem (extensionConfig.Name);
+
+                extensionConfig.Extentions.WithIndex ().ToList ().ForEach (_extention => {
+                    var _item = new ToolStripMenuItem (_extention.item.Name);
+                    _item.Click += (sendor, e) => {
+                        var _extensionPath = Path.Combine (ExtensionPath, _extention.item.Path);
+                        if (!Path.IsPathRooted (_extention.item.Path) && File.Exists (_extensionPath)) {
+                            WinAPI.OpenProcess (_extensionPath, _extention.item.Args, _extention.item.RunAs);
+                        } else {
+                            WinAPI.OpenProcess (_extention.item.Path, _extention.item.Args, _extention.item.RunAs);
+                        }
+                    };
+                    _item.ShowShortcutKeys = true;
+                    _item.ShortcutKeys = Keys.Control | (Keys) (Keys.F1 + _extention.index);
+                    _toolStrip.DropDownItems.Add (_item);
+                });
+                mainMenuStrip.Items.Insert (3, _toolStrip);
+            } catch (System.Exception) { }
+            #endregion
         }
 
         private void syncFormStatus () {
@@ -233,31 +273,7 @@ namespace DaemonKit {
                 btn_confirm.Text = "暂停守护";
             }
 
-            text_information.Text = "硬件信息玩命读取中...";
-
-            Observable.Start<string> (() => {
-                hardwareInfo.RefreshCPUList ();
-                hardwareInfo.RefreshVideoControllerList ();
-                hardwareInfo.RefreshMemoryList ();
-                hardwareInfo.RefreshNetworkAdapterList ();
-                hardwareInfo.RefreshMonitorList ();
-                hardwareInfo.RefreshBIOSList ();
-                hardwareInfo.RefreshMotherboardList ();
-                var _description = HardwareInfo.GetLocalIPv4Addresses ().Aggregate ("IPv4地址:" + "\r\n", (_current, _next) => { return _current + _next + "\r\n"; });
-                _description = hardwareInfo.CpuList.Aggregate (_description + "\r\nCPU:\r\n", (_current, _next) => { return _current + _next.Name; });
-                _description = hardwareInfo.VideoControllerList.Aggregate (_description + "\r\n\r\nGPU:\r\n", (_current, _next) => { return _current + _next.Name; });
-                _description = hardwareInfo.MemoryList.Aggregate (_description + "\r\n\r\n内存:\r\n", (_current, _next) => {
-                    return _current +
-                        string.Format ("{0}-{1}({2})", _next.Manufacturer, _next.PartNumber, _next.Capacity.FormatBytes ()) + "\r\n";
-                });
-                _description = hardwareInfo.MonitorList.Aggregate (_description + "\r\n显示器:\r\n", (_current, _next) => { return _current + _next.Name + "\r\n"; });
-                _description = hardwareInfo.BiosList.Aggregate (_description + "\r\nBIOS:\r\n", (_current, _next) => { return _current + _next.Manufacturer + " " + _next.Version + "\r\n"; });
-                _description = hardwareInfo.MotherboardList.Aggregate (_description + "\r\n主板:\r\n", (_current, _next) => { return _current + _next.Manufacturer + " " + _next.Product + "\r\n"; });
-                return _description;
-            }).ObserveOn (this).Subscribe (_description => {
-                text_information.ScrollBars = ScrollBars.Vertical;
-                text_information.Text = _description;
-            });
+            FetchHardwareInfo (null, null);
         }
 
         private void OnSelectMainProcess (object sender, EventArgs e) {
@@ -350,6 +366,35 @@ namespace DaemonKit {
             WinAPI.UnregisterHotKey (this.Handle, 100);
             WinAPI.UnregisterHotKey (this.Handle, 101);
             WinAPI.UnregisterHotKey (this.Handle, 102);
+        }
+
+        private void FetchHardwareInfo (object sender, MouseEventArgs e) {
+            text_information.Text = "硬件信息玩命读取中...";
+
+            Observable.Start<string> (() => {
+                hardwareInfo.RefreshCPUList ();
+                hardwareInfo.RefreshVideoControllerList ();
+                hardwareInfo.RefreshMemoryList ();
+                hardwareInfo.RefreshNetworkAdapterList ();
+                hardwareInfo.RefreshMonitorList ();
+                hardwareInfo.RefreshBIOSList ();
+                hardwareInfo.RefreshMotherboardList ();
+                var _description = HardwareInfo.GetLocalIPv4Addresses ().Aggregate ("IPv4地址:" + "\r\n", (_current, _next) => { return _current + _next + "\r\n"; });
+                _description = hardwareInfo.CpuList.Aggregate (_description + "\r\nCPU:\r\n", (_current, _next) => { return _current + _next.Name; });
+                _description = hardwareInfo.VideoControllerList.Aggregate (_description + "\r\n\r\nGPU:\r\n", (_current, _next) => { return _current + _next.Name; });
+                _description = hardwareInfo.MemoryList.Aggregate (_description + "\r\n\r\n内存:\r\n", (_current, _next) => {
+                    return _current +
+                        string.Format ("{0}-{1}({2})", _next.Manufacturer, _next.PartNumber, _next.Capacity.FormatBytes ()) + "\r\n";
+                });
+                _description = hardwareInfo.MonitorList.Aggregate (_description + "\r\n显示器:\r\n", (_current, _next) => { return _current + _next.Name + "\r\n"; });
+                _description = hardwareInfo.BiosList.Aggregate (_description + "\r\nBIOS:\r\n", (_current, _next) => { return _current + _next.Manufacturer + " " + _next.Version + "\r\n"; });
+                _description = hardwareInfo.MotherboardList.Aggregate (_description + "\r\n主板:\r\n", (_current, _next) => { return _current + _next.Manufacturer + " " + _next.Product + "\r\n"; });
+                return _description;
+            }).ObserveOn (this).Subscribe (_description => {
+                text_information.ScrollBars = ScrollBars.Vertical;
+                text_information.Text = _description;
+            });
+
         }
     }
 }

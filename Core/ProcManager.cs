@@ -24,16 +24,6 @@ namespace DaemonKit.Core {
                     NLogger.Info ("[DK]: 已打开进程{0}", Path);
                 }
             }
-
-            var _process = WinAPI.FindProcess (_processName);
-            if (_process == default (Process)) return;
-
-            // 如果程序挂起 则关闭进程
-            if (WinAPI.IsHungAppWindow (_process.MainWindowHandle)) {
-                _process.Kill ();
-                NLogger.Info ("[DK]: 检测到进程挂起, 已将其杀死: {0}", _processName);
-                return;
-            }
         }
     }
 }

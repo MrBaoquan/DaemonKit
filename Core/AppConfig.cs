@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace DaemonKit.Core {
     public class AppConfig {
@@ -12,8 +14,26 @@ namespace DaemonKit.Core {
         public bool KeepTop = true;
         public bool RunAs = true;
         public bool AutoStart = true;
+        public bool KillIfHung = false;
         public bool GlobalShortcut = true;
         public float DelayTime = 15.0f;
         public float IntervalTime = 30.0f;
+    }
+
+    public class Extention {
+        [XmlAttribute]
+        public string Name = string.Empty;
+        [XmlAttribute]
+        public string Path = string.Empty;
+        [XmlAttribute]
+        public string Args = string.Empty;
+
+        [XmlAttribute]
+        public bool RunAs = true;
+    }
+
+    public class ExtentionConfig {
+        public string Name = "快速访问";
+        public List<Extention> Extentions = new List<Extention> () { };
     }
 }

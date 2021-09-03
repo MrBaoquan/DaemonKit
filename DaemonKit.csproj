@@ -42,7 +42,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>bin\DaemonKit\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -144,6 +144,7 @@
     <Compile Include="DNHper\PlatformAPIs\Machine.cs" />
     <Compile Include="DNHper\PlatformAPIs\WinAPI.cs" />
     <Compile Include="DNHper\Test\TestDHelper.cs" />
+    <Compile Include="DNHper\Utils\GenericExtension.cs" />
     <Compile Include="DNHper\Utils\ParserExtension.cs" />
     <Compile Include="DNHper\Utils\Singleton.cs" />
     <Compile Include="DNHper\Utils\UConverter.cs" />
@@ -175,6 +176,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <None Include="DNHper\DNHper.asmdef" />
+    <None Include="Extensions\IPSettings.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
@@ -191,6 +195,15 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="extension.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Extensions\NetAssist.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Extensions\UartAssist.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="icon.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
