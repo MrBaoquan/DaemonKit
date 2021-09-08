@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Windows.Forms;
 using DaemonKit;
 using DNHper;
 using IWshRuntimeLibrary;
@@ -18,6 +19,13 @@ namespace DaemonKit.Core {
                 return Path.Combine (Path.GetDirectoryName (Process.GetCurrentProcess ().MainModule.FileName), "config.xml");
             }
         }
+
+        public static string BakConfigPath {
+            get {
+                return Path.Combine (Path.GetDirectoryName (Process.GetCurrentProcess ().MainModule.FileName), "temp", "config.xml");
+            }
+        }
+
         public static AppConfig appConfig;
         private static string mainProcess = string.Empty;
         public static string MainProcess {
@@ -87,17 +95,43 @@ namespace DaemonKit.Core {
 
         public static void SaveConfig () {
             USerialization.SerializeXML (appConfig, ConfigPath);
+            syncBakConfig ();
+        }
+
+        private static void syncBakConfig () {
+            if (!Directory.Exists (Path.GetDirectoryName (BakConfigPath))) {
+                Directory.CreateDirectory (Path.GetDirectoryName (BakConfigPath));
+            }
+            System.IO.File.Copy (ConfigPath, BakConfigPath, true);
         }
 
         private static DaemonKit mainWindow = null;
+
+        private static void loadConfig () {
+            if (!System.IO.File.Exists (ConfigPath) || new FileInfo (ConfigPath).Length == 0) {
+                if (!System.IO.File.Exists (BakConfigPath)) {
+                    USerialization.SerializeXML (new AppConfig (), ConfigPath);
+                } else {
+                    System.IO.File.Copy (BakConfigPath, ConfigPath, true);
+                }
+            }
+
+            // 反序列化配置文件
+            try {
+                appConfig = USerialization.DeserializeXML<AppConfig> (ConfigPath);
+                syncBakConfig ();
+            } catch (Exception e) {
+                NLogger.Error (e.Message);
+                MessageBox.Show (e.Message, "错误", MessageBoxButtons.OK);
+            }
+        }
         public static void ProgramEntry (DaemonKit InWindow) {
             mainWindow = InWindow;
             NLogger.LogFileDir = "Logs";
             NLogger.Initialize ();
-            if (!System.IO.File.Exists (ConfigPath)) {
-                USerialization.SerializeXML (new AppConfig (), ConfigPath);
-            }
-            appConfig = USerialization.DeserializeXML<AppConfig> (ConfigPath);
+
+            loadConfig ();
+
             syncConfig ();
             RunDaemonTask ();
 

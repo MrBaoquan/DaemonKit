@@ -24,7 +24,7 @@ namespace DaemonKit {
                 return Path.Combine (Path.GetDirectoryName (Process.GetCurrentProcess ().MainModule.FileName), "Extensions");
             }
         }
-        ExtentionConfig extensionConfig = null;
+        ExtensionConfig extensionConfig = null;
         public DaemonKit () {
 
             InitializeComponent ();
@@ -187,14 +187,14 @@ namespace DaemonKit {
             #region 拓展菜单栏
 
             if (!File.Exists (ExtensionConfigPath)) {
-                USerialization.SerializeXML (new ExtentionConfig (), ExtensionConfigPath);
+                USerialization.SerializeXML (new ExtensionConfig (), ExtensionConfigPath);
             };
 
             try {
-                extensionConfig = USerialization.DeserializeXML<ExtentionConfig> (ExtensionConfigPath);
+                extensionConfig = USerialization.DeserializeXML<ExtensionConfig> (ExtensionConfigPath);
                 var _toolStrip = new ToolStripMenuItem (extensionConfig.Name);
 
-                extensionConfig.Extentions.WithIndex ().ToList ().ForEach (_extention => {
+                extensionConfig.Extensions.WithIndex ().ToList ().ForEach (_extention => {
                     var _item = new ToolStripMenuItem (_extention.item.Name);
                     _item.Click += (sendor, e) => {
                         var _extensionPath = Path.Combine (ExtensionPath, _extention.item.Path);

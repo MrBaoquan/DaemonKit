@@ -20,7 +20,7 @@ namespace DaemonKit.Core {
         public float IntervalTime = 30.0f;
     }
 
-    public class Extention {
+    public class Extension {
         [XmlAttribute]
         public string Name = string.Empty;
         [XmlAttribute]
@@ -32,8 +32,8 @@ namespace DaemonKit.Core {
         public bool RunAs = true;
     }
 
-    public class ExtentionConfig {
+    public class ExtensionConfig {
         public string Name = "快速访问";
-        public List<Extention> Extentions = new List<Extention> () { };
+        public List<Extension> Extensions = new List<Extension> () { };
     }
 }

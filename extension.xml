@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0"?>
-<ExtentionConfig xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ExtensionConfig xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Name>快速访问</Name>
-  <Extentions>
-    <Extention Name="设备管理器" Path="control.exe" Args="hdwwiz.cpl" />
-    <Extention Name="程序和功能" Path="control.exe" Args="appwiz.cpl" />
-    <Extention Name="网络和共享中心" Path="control.exe" Args="/name Microsoft.NetworkAndSharingCenter" />
-    <Extention Name="Windows Defender 防火墙" Path="control.exe" Args="firewall.cpl" />
-    <Extention Name="网络调试助手" Path="NetAssist.exe" Args="" />
-    <Extention Name="串口调试助手" Path="UartAssist.exe" Args="" />
-    <Extention Name="IP设置" Path="IPSettings.bat" Args="" />
-  </Extentions>
-</ExtentionConfig>
+  <Extensions>
+    <Extension Name="设备管理器" Path="control.exe" Args="hdwwiz.cpl" />
+    <Extension Name="程序和功能" Path="control.exe" Args="appwiz.cpl" />
+    <Extension Name="网络和共享中心" Path="control.exe" Args="/name Microsoft.NetworkAndSharingCenter" />
+    <Extension Name="Windows Defender 防火墙" Path="control.exe" Args="firewall.cpl" />
+    <Extension Name="网络调试助手" Path="NetAssist.exe" Args="" />
+    <Extension Name="串口调试助手" Path="UartAssist.exe" Args="" />
+    <Extension Name="IP设置" Path="IPSettings.bat" Args="" />
+  </Extensions>
+</ExtensionConfig>
