@@ -176,6 +176,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <None Include="DNHper\DNHper.asmdef" />
+    <None Include="Extensions\Downloader.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Extensions\IPSettings.bat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
