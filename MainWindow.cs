@@ -179,6 +179,13 @@ namespace DaemonKit {
                 WinAPI.OpenProcess ("powershell.exe", "", true);
             };
 
+            menu_newVersion.ShortcutKeys = Keys.Alt | Keys.U;
+            menu_newVersion.ShowShortcutKeys = true;
+            menu_newVersion.Click += (sendor, e) =>
+            {
+                WinAPI.OpenProcess("explorer.exe", "https://gitee.com/MrBaoquan/daemon-kit/releases");
+            };
+
             menu_about.Click += (sender, e) => {
                 new About ().ShowDialog ();
             };
@@ -211,6 +218,8 @@ namespace DaemonKit {
                 mainMenuStrip.Items.Insert (3, _toolStrip);
             } catch (System.Exception) { }
             #endregion
+
+            this.Text = string.Format("{0}-v{1}", Application.ProductName,Application.ProductVersion);
         }
 
         private void syncFormStatus () {

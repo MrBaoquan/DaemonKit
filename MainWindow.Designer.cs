@@ -58,6 +58,7 @@
             this.menu_about = new System.Windows.Forms.ToolStripMenuItem();
             this.text_information = new System.Windows.Forms.TextBox();
             this.text_logbox = new System.Windows.Forms.TextBox();
+            this.menu_newVersion = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -225,25 +226,25 @@
             // menu_openProcess
             // 
             this.menu_openProcess.Name = "menu_openProcess";
-            this.menu_openProcess.Size = new System.Drawing.Size(180, 22);
+            this.menu_openProcess.Size = new System.Drawing.Size(124, 22);
             this.menu_openProcess.Text = "打开进程";
             // 
             // menu_killProcess
             // 
             this.menu_killProcess.Name = "menu_killProcess";
-            this.menu_killProcess.Size = new System.Drawing.Size(180, 22);
+            this.menu_killProcess.Size = new System.Drawing.Size(124, 22);
             this.menu_killProcess.Text = "杀死进程";
             // 
             // menu_selectProcess
             // 
             this.menu_selectProcess.Name = "menu_selectProcess";
-            this.menu_selectProcess.Size = new System.Drawing.Size(180, 22);
+            this.menu_selectProcess.Size = new System.Drawing.Size(124, 22);
             this.menu_selectProcess.Text = "选择进程";
             // 
             // menu_backup
             // 
             this.menu_backup.Name = "menu_backup";
-            this.menu_backup.Size = new System.Drawing.Size(180, 22);
+            this.menu_backup.Size = new System.Drawing.Size(124, 22);
             this.menu_backup.Text = "备份进程";
             // 
             // ts_options
@@ -260,40 +261,41 @@
             // menu_autoStart
             // 
             this.menu_autoStart.Name = "menu_autoStart";
-            this.menu_autoStart.Size = new System.Drawing.Size(180, 22);
+            this.menu_autoStart.Size = new System.Drawing.Size(160, 22);
             this.menu_autoStart.Text = "开机自启";
             // 
             // menu_keepTop
             // 
             this.menu_keepTop.Name = "menu_keepTop";
-            this.menu_keepTop.Size = new System.Drawing.Size(180, 22);
+            this.menu_keepTop.Size = new System.Drawing.Size(160, 22);
             this.menu_keepTop.Text = "进程窗口置顶";
             // 
             // menu_RunAs
             // 
             this.menu_RunAs.Name = "menu_RunAs";
-            this.menu_RunAs.Size = new System.Drawing.Size(180, 22);
+            this.menu_RunAs.Size = new System.Drawing.Size(160, 22);
             this.menu_RunAs.Text = "管理员身份运行";
             // 
             // menu_globalShortcut
             // 
             this.menu_globalShortcut.Name = "menu_globalShortcut";
-            this.menu_globalShortcut.Size = new System.Drawing.Size(180, 22);
+            this.menu_globalShortcut.Size = new System.Drawing.Size(160, 22);
             this.menu_globalShortcut.Text = "全局快捷键";
             // 
             // 关于ToolStripMenuItem
             // 
             this.关于ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menu_newVersion,
             this.menu_about});
             this.关于ToolStripMenuItem.Name = "关于ToolStripMenuItem";
             this.关于ToolStripMenuItem.Size = new System.Drawing.Size(44, 21);
-            this.关于ToolStripMenuItem.Text = "关于";
+            this.关于ToolStripMenuItem.Text = "帮助";
             // 
             // menu_about
             // 
             this.menu_about.Name = "menu_about";
             this.menu_about.Size = new System.Drawing.Size(180, 22);
-            this.menu_about.Text = "关于";
+            this.menu_about.Text = "关于 DaemonKit";
             // 
             // text_information
             // 
@@ -323,6 +325,12 @@
             this.text_logbox.Size = new System.Drawing.Size(443, 143);
             this.text_logbox.TabIndex = 11;
             this.text_logbox.Text = "日志信息示例文本";
+            // 
+            // menu_newVersion
+            // 
+            this.menu_newVersion.Name = "menu_newVersion";
+            this.menu_newVersion.Size = new System.Drawing.Size(180, 22);
+            this.menu_newVersion.Text = "版本更新";
             // 
             // DaemonKit
             // 
@@ -385,6 +393,7 @@
         private System.Windows.Forms.ToolStripMenuItem menu_powershell;
         private System.Windows.Forms.ToolStripMenuItem menu_userProfile;
         private System.Windows.Forms.ToolStripMenuItem menu_startup;
+        private System.Windows.Forms.ToolStripMenuItem menu_newVersion;
     }
 }
 
